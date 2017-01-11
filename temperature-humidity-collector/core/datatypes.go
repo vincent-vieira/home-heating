@@ -1,7 +1,7 @@
 package core
 
 type Measure struct {
-	date int64
-	temperature float32
-	humidity float32
+	Date int64
+	Temperature float32
+	Humidity float32
 }
