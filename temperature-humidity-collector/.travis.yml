@@ -1,0 +1,8 @@
+language: go
+
+branches:
+  only:
+  - develop
+
+go:
+  - 1.7.x
