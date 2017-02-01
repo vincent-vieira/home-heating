@@ -1,8 +1,7 @@
 # Temperature & humidity collector/publisher
 
 ## About the software
-This software is written in Go and is designed to periodically read values from a [AM2302](http://www.electroschematics.com/11293/am2302-dht22-datasheet/) temperature and humidity sensor, plugged to a GPIO-compatible device.
-All measurements are then forwarded to anyone listening for them through a [Socket.io](http://socket.io/) server, allowing data streaming to anyone connected.
+This software is written in Go and is designed to periodically read values from a Unix socket exposing measurements. All of them are then forwarded to anyone listening for them through a [Socket.io](http://socket.io/) server, allowing data streaming to anyone connected.
 
 ## Launch options
 - `listen`
@@ -11,9 +10,6 @@ All measurements are then forwarded to anyone listening for them through a [Sock
 - `refresh`
     - The time interval between two temperature/humidity measurements, in seconds
     - Not mandatory, defaults to *60*
-- `gpio`
-    - The GPIO pin number where the sensor is connected
-    - Not mandatory, defaults to GPIO pin *4*
     
 ## Build information 
 The project is following the recommended Go layout for a project. Please just make sure that this folder is accessible from the *GOPATH*.
