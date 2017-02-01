@@ -59,7 +59,6 @@ func webSocketNotifier(listenPort int, measures <-chan Measure, trap <-chan bool
 			so.Join(measurementsChannel)
 		})
 		http.Handle("/socket.io/", server)
-		http.Handle("/", http.FileServer(http.Dir("./asset")))
 
 		listeningAddress := fmt.Sprintf(":%d", listenPort)
 		srvCloser, err := listenAndServeWithClose(listeningAddress, nil)
