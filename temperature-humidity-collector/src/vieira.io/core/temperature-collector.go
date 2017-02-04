@@ -6,7 +6,7 @@ import (
 	"log"
 )
 
-type MeasureProvider func() (temperature float32, humidity float32, retried int, err error)
+type MeasureProvider func() (temperature float32, humidity float32, err error)
 
 func temperatureCollector(measureInterval int, measures chan<- Measure, trap <-chan bool, wg *sync.WaitGroup, measureProvider MeasureProvider) func() {
 	return func() {
@@ -26,10 +26,8 @@ func temperatureCollector(measureInterval int, measures chan<- Measure, trap <-c
 }
 
 func measure(measures chan<- Measure, measureTime time.Time, measureProvider MeasureProvider) {
-	temperature, humidity, retried, err := measureProvider()
-	if err != nil {
-		log.Panicln("Error while reading temperature sensor", err)
-	}
-	log.Printf("Temperature = %v°C, Humidity = %v%% (retried %d times)\n", temperature, humidity, retried)
+	temperature, humidity, err := measureProvider()
+	if err != nil { log.Panicln("Error while reading temperature sensor", err) }
+	log.Printf("Temperature = %v°C, Humidity = %v%%\n", temperature, humidity)
 	measures <- Measure{Date: measureTime.UnixNano(), Humidity: humidity, Temperature: temperature}
 }
