@@ -28,7 +28,7 @@ func temperatureCollector(measureInterval int, measures chan<- Measure, trap <-c
 func measure(measures chan<- Measure, measureTime time.Time, measureProvider MeasureProvider) {
 	temperature, humidity, err := measureProvider()
 	if err != nil {
-		log.Fatalln(err)
+		log.Println(err)
 	} else {
 		log.Printf("Temperature = %v°C, Humidity = %v%%\n", temperature, humidity)
 		measures <- Measure{Date: measureTime.UnixNano(), Humidity: humidity, Temperature: temperature}
