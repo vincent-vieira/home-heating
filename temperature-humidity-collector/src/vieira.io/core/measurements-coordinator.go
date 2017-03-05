@@ -6,17 +6,19 @@ import (
 	"os"
 	"sync"
 	"log"
-	"github.com/d2r2/go-dht"
+	"os/user"
+	"github.com/gerp/dht22"
 )
 
-const subroutines = 1;
+const subroutines = 2;
 
 func Start(listenPort int, measureInterval int, gpioPort int) {
 	signals := make(chan os.Signal, 1)
 	trap := make(chan bool, subroutines)
 	measures := make(chan Measure)
-
-	measureProvider := func() (temperature float32, humidity float32, retried int, err error) { return dht.ReadDHTxxWithRetry(dht.AM2302, gpioPort, true, 10) }
+	currentUser, currentUserFetchError := user.Current()
+	if currentUserFetchError != nil { log.Panicln("Unable to get current user.", currentUserFetchError) }
+	if currentUser.Uid != "0" { log.Panicln("Root is required to read temperature sensor") }
 
 	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM)
 
@@ -30,7 +32,9 @@ func Start(listenPort int, measureInterval int, gpioPort int) {
 	wg.Add(subroutines)
 
 	log.Println("Starting temperature collector subroutine")
-	go temperatureCollector(measureInterval, measures, trap, &wg, measureProvider)();
+	go temperatureCollector(measureInterval, measures, trap, &wg, func() (float32, float32, error) {
+		return dht22.Read(gpioPort)
+	})();
 
 	log.Println("Starting websocket subroutine")
 	go webSocketNotifier(listenPort, measures, trap, &wg)();

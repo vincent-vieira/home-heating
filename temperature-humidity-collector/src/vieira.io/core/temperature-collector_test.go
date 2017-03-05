@@ -8,7 +8,7 @@ import (
 
 func TestTemperatureCollector(t *testing.T) {
 	assertThat := assert.New(t)
-	measureProvider := func() (temperature float32, humidity float32, err error) { return 23, 37, nil }
+	measureProvider := func() (float32, float32, error) { return 23, 37, nil }
 	measures := make(chan Measure, 1)
 
 	now := time.Now()
