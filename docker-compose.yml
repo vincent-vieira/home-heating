@@ -1,0 +1,49 @@
+version: '2'
+services:
+  portainer:
+    image: portainer/portainer
+    ports:
+      - "9000:9000"
+    networks:
+      - home-heating
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+  web-gateway:
+    container_name: web-gateway
+    build:
+      context: ./web-gateway
+    ports:
+      - "8080:80"
+    links:
+      - portainer
+      - rethinkdb
+    depends_on:
+      - portainer
+      - rethinkdb
+    networks:
+      - home-heating
+  temperature-humidity-collector:
+    container_name: temperature-humidity-collector
+    build:
+      context: ./temperature-humidity-collector
+    privileged: true
+    devices:
+      - "/dev/gpiomem:/dev/gpiomem"
+    ports:
+      - "5000:5000"
+    networks:
+      - home-heating
+  # TODO : add persistenceunit (depends-on : rethinkdb)
+  rethinkdb:
+    container_name: rethinkdb
+    image: generalmeow/rethinkdb:1.0-arm
+    ports:
+      - "9001:28015"
+      - "10000:8080"
+    volumes:
+      - /opt/measurements-tsdb:/data
+    networks:
+      - home-heating
+networks:
+  home-heating:
+    driver: bridge
